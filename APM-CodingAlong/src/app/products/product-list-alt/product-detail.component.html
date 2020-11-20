@@ -1,5 +1,5 @@
 <div class="card"
-     *ngIf="product">
+     *ngIf="product$ | async as product">
   <div class="card-header">
     {{pageTitle}}
   </div>
@@ -16,7 +16,7 @@
     </div>
     <div class="row">
       <div class="col-md-2">Category:</div>
-      <div class="col-md-6">{{product.category}}</div>
+      <div class="col-md-6">{{product.categoryName}}</div>
     </div>
     <div class="row">
       <div class="col-md-2">Description:</div>

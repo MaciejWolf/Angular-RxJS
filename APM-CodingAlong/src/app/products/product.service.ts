@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { combineLatest, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 
 import { Product } from './product';
@@ -39,9 +39,26 @@ export class ProductService {
           searchKey: [product.productName]
         }) as Product)));
 
+  private productSelectedSubject = new BehaviorSubject<number>(0);
+  productSelectedAction$ = this.productSelectedSubject.asObservable();
+
+  selectedProduct$ = combineLatest([
+    this.productsWithCategories$, this.productSelectedAction$
+  ])
+    .pipe(
+      map(([products, selectedProductId]) => 
+        products.find(product => product.id === selectedProductId)
+      ),
+      tap(product => console.log('selectedProduct', product))
+    );
+
   constructor(private http: HttpClient,
               private productCategoryService: ProductCategoryService,
               private supplierService: SupplierService) { }
+
+    selectProduct(productId: number) {
+      this.productSelectedSubject.next(productId);
+    }
 
   private fakeProduct(): Product {
     return {
