@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { BehaviorSubject, combineLatest, from, merge, Observable, Subject, throwError } from 'rxjs';
-import { catchError, filter, map, mergeMap, scan, shareReplay, tap, toArray } from 'rxjs/operators';
+import { catchError, filter, map, mergeMap, scan, shareReplay, switchMap, tap, toArray } from 'rxjs/operators';
 
 import { Product } from './product';
 import { Supplier } from '../suppliers/supplier';
@@ -62,7 +62,12 @@ export class ProductService {
   selectedProductSuppliersLazy$ = this.selectedProduct$
     .pipe(
       filter(selectedProduct => Boolean(selectedProduct)),
-      mergeMap(selectedProduct => from(selectedProduct.supplierIds) // streams supplier ids and complete
+      // streams supplier ids and complete
+      // switchMap for retrieving the data only for the latest selected product
+      // with mergeMap, when one product is selected and then quickly another is selected, before supplier for the first on is retrieved,
+      // suppliers for both products are retrieved and streamed (but does it still call remote api?)
+      // with switchMap, only supplier for last item is streamed
+      switchMap(selectedProduct => from(selectedProduct.supplierIds) 
         .pipe(
           mergeMap(supplierId => this.http.get<Supplier>(`${this.suppliersUrl}/${supplierId}`)),
           toArray(), // collects data when stream of supplier ids completes
