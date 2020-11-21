@@ -29,8 +29,11 @@ export class SupplierService {
     )
 
   constructor(private http: HttpClient) { 
-    this.suppliersWithConcatMap$.subscribe(item => console.log('concatMap result ', item)); // items appear one per second
-    this.suppliersWithMergeMap$.subscribe(item => console.log('mergeMap result ', item)); // items appear all at once - parallel processing
+    // items appear one per second
+    this.suppliersWithConcatMap$.subscribe(item => console.log('concatMap result ', item));
+
+    // items appear all at once - parallel processing
+    this.suppliersWithMergeMap$.subscribe(item => console.log('mergeMap result ', item));
   }
 
   private handleError(err: any): Observable<never> {
