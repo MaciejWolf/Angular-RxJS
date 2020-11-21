@@ -18,12 +18,6 @@ export class ProductService {
 
   private products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
-      map(products => 
-        products.map(product => ({
-          ...product,
-          price: product.price * 1.5,
-          searchKey: [product.productName]
-        }) as Product)),
       tap(data => console.log('Products: ', JSON.stringify(data))),
       catchError(this.handleError));
 
