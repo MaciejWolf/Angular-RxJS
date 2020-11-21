@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { EMPTY, Subject } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { Product } from '../product';
 
 import { ProductService } from '../product.service';
 
@@ -11,6 +12,11 @@ import { ProductService } from '../product.service';
 })
 export class ProductDetailComponent {
   pageTitle = 'Product Detail';
+
+  pageTitle$ = this.productService.selectedProduct$
+    .pipe(
+      map((p: Product) => p ? `Product Detail for: ${p.productName}` : null)
+    )
 
   private errorMessageSubject = new Subject<string>();
   errorMessage$ = this.errorMessageSubject.asObservable();
