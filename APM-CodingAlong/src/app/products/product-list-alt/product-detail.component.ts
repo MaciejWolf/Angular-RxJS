@@ -23,7 +23,7 @@ export class ProductDetailComponent {
       })
     )
 
-  productSuppliers$ = this.productService.selectedProductSuppliers$
+  productSuppliers$ = this.productService.selectedProductSuppliersLazy$
     .pipe(
       catchError(err => {
         this.errorMessageSubject.next(err);
