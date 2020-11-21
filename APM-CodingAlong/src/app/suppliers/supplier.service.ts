@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { throwError, Observable, of } from 'rxjs';
 import { Supplier } from './supplier';
-import { concatMap, map, mergeMap, tap } from 'rxjs/operators';
+import { concatMap, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -28,12 +28,24 @@ export class SupplierService {
       mergeMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
     )
 
+    suppliersWithSwitchMap$ = of(1, 5, 8)
+    .pipe(
+      tap(id => console.log('switchMap source Observable', id)),
+      switchMap(id => this.http.get<Supplier>(`${this.suppliersUrl}/${id}`))
+    )
+
   constructor(private http: HttpClient) { 
     // items appear one per second
+    // waits for inner Observable to complete before processing the next one
     this.suppliersWithConcatMap$.subscribe(item => console.log('concatMap result ', item));
 
-    // items appear all at once - parallel processing
+    // items appear all at once
+    // processes inner Observables in parallel
     this.suppliersWithMergeMap$.subscribe(item => console.log('mergeMap result ', item));
+    
+    // only the last item
+    // unsubscribes from the prior inner Observable and switches to the new one
+    this.suppliersWithSwitchMap$.subscribe(item => console.log('switchMap result ', item));
   }
 
   private handleError(err: any): Observable<never> {
